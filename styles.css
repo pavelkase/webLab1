@@ -1,0 +1,70 @@
+body{
+    background-color: rgb(61, 140, 209);
+    font-family: 'Comfortaa', sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+#shapka{
+    display: block;
+    font-family: sans-serif;
+    font-size: 22px;
+    padding: 20px;
+    color: aliceblue;
+}
+
+#shapka::before{
+    content: "🎓 ";
+}
+
+#formochka, #canvasik, #results {
+    display: block;
+    padding: 20px;
+    margin: 0 auto;
+    background-color: black;
+    color: white;
+    max-width: 600px;
+}
+
+.radiusKnopochka{
+    padding: 8px 16px;
+    margin: 5px 10px 5px 0;
+    background-color: aqua;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button[type="submit"]{
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: bisque;
+    color: black;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+#xInput, input[type="checkbox"] {
+    margin: 10px 5px;        
+    padding: 5px;            
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #bdc3c7;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background-color: #34495e;
+    color: white;
+}

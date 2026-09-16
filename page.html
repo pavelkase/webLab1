@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <title>Лабораторная 1</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="styles.css">
+        <script src="logic.js" defer></script>
+    </head>
+    <body>
+        <div id="shapka">
+            Касэ Павел P3232, вариант 22715
+        </div>
+        <div>
+            <canvas id="canvasik" width="400" height="400"></canvas>
+        </div>
+        <form id="formochka">
+
+            <div>
+                <label>Выберите X (-5 ... 5)</label>
+                <input type="text" id="xInput" placeholder="Введите X">
+            </div>
+
+            <div>
+                <label>Выберите Y:</label>
+                <label><input type="checkbox" name="yVal" value="-4">-4</label>
+                <label><input type="checkbox" name="yVal" value="-3">-3</label>
+                <label><input type="checkbox" name="yVal" value="-2">-2</label>
+                <label><input type="checkbox" name="yVal" value="-1">-1</label>
+                <label><input type="checkbox" name="yVal" value="0">0</label>
+                <label><input type="checkbox" name="yVal" value="1">1</label>
+                <label><input type="checkbox" name="yVal" value="2">2</label>
+                <label><input type="checkbox" name="yVal" value="3">3</label>
+                <label><input type="checkbox" name="yVal" value="4">4</label>
+            </div>
+
+            <div>
+                <label>Выберите R:</label>
+                <button type="button" class="radiusKnopochka">1</button>
+                <button type="button" class="radiusKnopochka">1.5</button>
+                <button type="button" class="radiusKnopochka">2</button>
+                <button type="button" class="radiusKnopochka">2.5</button>
+                <button type="button" class="radiusKnopochka">3</button>
+
+            </div>
+
+            <button type="submit">Отправить</button>
+        </form>
+        <table id="resultatiki">
+            <thead>
+                <tr>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>R</th>
+                    <th>Результат</th>
+                    <th>Время</th>
+                </tr>
+            </thead>
+        </table>
+
+    </body>
+</html>
