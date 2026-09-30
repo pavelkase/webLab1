@@ -1,131 +1,196 @@
+const form = document.getElementById("formochka");
+const tbody = document.getElementById("resultBody");
+const STORAGE_KEY = "lab1_results";
+
 let currentR = null;
+let results = loadResults();
 
-document.addEventListener("DOMContentLoaded", () => {
-    drawCanvas();
-    loadTable();
-});
+function checkHit(x, y, r) {
+    if (y <= r && y >= 0 && x >= -r && x <= 0) {
+        return true;
+    }
+    if (y >= 0 && x >= 0 && x ** 2 + y ** 2 <= (r / 2) ** 2) {
+        return true;
+    }
+    if (x >= 0 && y <= 0 && y >= x / 2 - r / 2) {
+        return true;
+    }
+    return false;
+}
 
-const rButtons = document.querySelectorAll('.radiusKnopochka');
+function loadResults() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+        return [];
+    }
+}
 
-rButtons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        rButtons.forEach(b => b.style.backgroundColor = 'aqua');
-        e.target.style.backgroundColor = 'teal'; 
-        
-        currentR = parseFloat(e.target.innerText);
-        drawCanvas(); 
+function saveResults() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+    } catch (e) {
+        console.error("Не удалось сохранить результаты", e);
+    }
+}
+
+function renderTable() {
+    tbody.innerHTML = "";
+    results.forEach((item) => {
+        const tr = document.createElement("tr");
+        const cells = [
+            item.x,
+            item.y,
+            item.r,
+            item.hit ? "Попадание" : "Промах",
+            new Date(item.time).toLocaleString("ru-RU"),
+        ];
+        cells.forEach((value) => {
+            const td = document.createElement("td");
+            td.textContent = value;
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
     });
-});
+}
 
-const form = document.getElementById('formochka');
+function parseX(str) {
+    str = str.trim().replace(",", ".");
+    if (!/^[+-]?\d+(\.\d+)?$/.test(str)) {
+        return NaN;
+    }
+    return parseFloat(str);
+}
 
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
 
-    const xStr = document.getElementById('xInput').value.replace(',', '.');
-    const x = parseFloat(xStr);
-    
+    const x = parseX(document.getElementById("xInput").value);
     if (isNaN(x) || x < -5 || x > 5) {
-        alert("Ошибка: X должен быть числом от -5 до 5");
-        return; 
+        alert("X должен быть числом в промежутке от -5 до 5");
+        return;
     }
 
-    const yChecked = document.querySelectorAll('input[name="yVal"]:checked');
+    const yChecked = document.querySelectorAll("input[name=yVal]:checked");
     if (yChecked.length !== 1) {
-        alert("Ошибка: Выберите ровно одно значение Y");
+        alert("Выберите строго одно значение для Y");
         return;
     }
     const y = parseFloat(yChecked[0].value);
 
     if (currentR === null) {
-        alert("Ошибка: Пожалуйста, выберите значение R");
+        alert("Выберите R");
         return;
     }
 
-    const hitSquare = (x <= 0 && x >= -currentR) && (y >= 0 && y <= currentR);
-    const hitTriangle = (x >= 0 && y <= 0) && (y >= x - (currentR / 2));
-    const isHit = hitSquare || hitTriangle;
-
-    const timeString = new Intl.DateTimeFormat('ru-RU', {
-        dateStyle: 'short',
-        timeStyle: 'medium'
-    }).format(new Date());
-
-    const resultObj = { x: x, y: y, r: currentR, hit: isHit, time: timeString };
-    
-    saveResult(resultObj);
-    addTableRow(resultObj);
-    drawCanvas();
+    const hit = checkHit(x, y, currentR);
+    results.push({ x: x, y: y, r: currentR, hit: hit, time: Date.now() });
+    saveResults();
+    renderTable();
+    draw();
 });
 
-function saveResult(res) {
-    let history = JSON.parse(localStorage.getItem('lab_history')) || [];
-    history.push(res);
-    localStorage.setItem('lab_history', JSON.stringify(history));
+const rButtons = document.querySelectorAll(".radiusKnopochka");
+rButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+        currentR = parseFloat(btn.textContent);
+        rButtons.forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        draw();
+    });
+});
+
+const canvas = document.getElementById("canvasik");
+const ctx = canvas.getContext("2d");
+const CX = canvas.width / 2;
+const CY = canvas.height / 2;
+
+
+const UNIT = 55;
+
+function drawArrow(x1, y1, x2, y2) {
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - 10 * Math.cos(angle - Math.PI / 7), y2 - 10 * Math.sin(angle - Math.PI / 7));
+    ctx.lineTo(x2 - 10 * Math.cos(angle + Math.PI / 7), y2 - 10 * Math.sin(angle + Math.PI / 7));
+    ctx.closePath();
+    ctx.fill();
 }
 
-function loadTable() {
-    let history = JSON.parse(localStorage.getItem('lab_history')) || [];
-    history.forEach(res => addTableRow(res));
-}
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-function addTableRow(res) {
-    const tbody = document.querySelector('#results tbody');
-    if (!tbody) {
-        document.getElementById('results').innerHTML += '<tbody></tbody>';
-    }
-    
-    const table = document.querySelector('#results tbody');
-    const row = table.insertRow();
-    
-    const resultText = res.hit ? '<span style="color: green">Попадание</span>' : '<span style="color: red">Промах</span>';
-
-    row.innerHTML = `
-        <td>${res.x}</td>
-        <td>${res.y}</td>
-        <td>${res.r}</td>
-        <td>${resultText}</td>
-        <td>${res.time}</td>
-    `;
-}
-
-function drawCanvas() {
-    const canvas = document.getElementById('canvasik');
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;  
-    const h = canvas.height; 
-    
-    const scale = 40; 
-    
-    ctx.clearRect(0, 0, w, h);
-    
     if (currentR !== null) {
-        const rPx = currentR * scale;
-        ctx.fillStyle = '#3498db'; 
+        const rPx = currentR * UNIT;
 
-        ctx.fillRect(w/2 - rPx, h/2 - rPx, rPx, rPx);
+        ctx.fillStyle = "#3399FF";
+
+        ctx.fillRect(CX - rPx, CY - rPx, rPx, rPx);
 
         ctx.beginPath();
-        ctx.moveTo(w/2, h/2); 
-        ctx.lineTo(w/2 + rPx/2, h/2); 
-        ctx.lineTo(w/2, h/2 + rPx/2); 
+        ctx.moveTo(CX, CY);
+        ctx.lineTo(CX + rPx, CY);
+        ctx.lineTo(CX, CY + rPx / 2);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(CX, CY);
+        ctx.arc(CX, CY, rPx / 2, -Math.PI / 2, 0, false);
+        ctx.closePath();
         ctx.fill();
     }
 
-    ctx.beginPath();
-    ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); 
-    ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h); 
-    ctx.strokeStyle = 'white';
-    ctx.stroke();
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "black";
+    ctx.lineWidth = 1;
+    drawArrow(10, CY, canvas.width - 10, CY);
+    drawArrow(CX, canvas.height - 10, CX, 10);
 
-    let history = JSON.parse(localStorage.getItem('lab_history')) || [];
-    history.forEach(pt => {
-        const cx = w/2 + pt.x * scale;
-        const cy = h/2 - pt.y * scale; 
+    ctx.font = "14px sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("x", canvas.width - 14, CY + 20);
+    ctx.fillText("y", CX + 10, 16);
 
+
+    if (currentR !== null) {
+        [1, 0.5, -0.5, -1].forEach((k) => {
+            const off = k * currentR * UNIT;
+            const label = String(+(k * currentR).toFixed(2));
+
+            ctx.beginPath();
+            ctx.moveTo(CX + off, CY - 4);
+            ctx.lineTo(CX + off, CY + 4);
+            ctx.stroke();
+            ctx.textAlign = "center";
+            ctx.fillText(label, CX + off, CY - 8);
+
+            ctx.beginPath();
+            ctx.moveTo(CX - 4, CY - off);
+            ctx.lineTo(CX + 4, CY - off);
+            ctx.stroke();
+            ctx.textAlign = "left";
+            ctx.fillText(label, CX + 8, CY - off + 4);
+        });
+    }
+
+
+    results.forEach((p) => {
+        const px = CX + p.x * UNIT;
+        const py = CY - p.y * UNIT;
+        ctx.fillStyle = p.hit ? "lime" : "red";
         ctx.beginPath();
-        ctx.arc(cx, cy, 4, 0, Math.PI * 2); 
-        ctx.fillStyle = pt.hit ? '#2ecc71' : '#e74c3c'; 
+        ctx.arc(px, py, 4, 0, Math.PI * 2);
         ctx.fill();
     });
 }
+
+draw();
+renderTable();
