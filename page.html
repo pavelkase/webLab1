@@ -14,13 +14,13 @@
             Касэ Павел P3232, вариант 22715
         </div>
         <div>
-            <canvas id="canvasik" width="400" height="400"></canvas>
+            <canvas id="canvasik" width="600" height="600"></canvas>
         </div>
         <form id="formochka">
 
             <div>
-                <label>Выберите X (-5 ... 5)</label>
-                <input type="text" id="xInput" placeholder="Введите X">
+                <label for="xInput">Выберите X (-5 ... 5)</label>
+                <input type="text" id="xInput" placeholder="Введите X" autocomplete="off">
             </div>
 
             <div>
@@ -58,7 +58,11 @@
                     <th>Время</th>
                 </tr>
             </thead>
+            <tbody id="resultBody"></tbody>
         </table>
+
+    </body>
+</html>
 
     </body>
 </html>
