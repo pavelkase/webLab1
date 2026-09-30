@@ -1,8 +1,12 @@
 body{
-    background-color: rgb(61, 140, 209);
+    background-color: rgba(255, 255, 167, 0.696);
     font-family: 'Comfortaa', sans-serif;
     margin: 0;
     padding: 20px;
+}
+
+input, button{
+    font-family: inherit;
 }
 
 #shapka{
@@ -10,29 +14,41 @@ body{
     font-family: sans-serif;
     font-size: 22px;
     padding: 20px;
-    color: aliceblue;
+    color: rgb(0, 0, 0);
 }
 
 #shapka::before{
-    content: "🎓 ";
+    content: "🎓 MADE BY CHAT LGPT, GAYMINI, CLOWD AND DEEPSUCK";
 }
 
-#formochka, #canvasik, #results {
+#formochka, #canvasik, #resultatiki{
     display: block;
     padding: 20px;
     margin: 0 auto;
-    background-color: black;
-    color: white;
     max-width: 600px;
+}
+
+#formochka{
+    background-color: rgb(14, 130, 213);
+    color: white;
+}
+
+#canvasik{
+    background-color: white;
 }
 
 .radiusKnopochka{
     padding: 8px 16px;
     margin: 5px 10px 5px 0;
-    background-color: aqua;
+    background-color: rgb(1, 132, 132);
     color: white;
     border: none;
     cursor: pointer;
+}
+
+.radiusKnopochka.selected{
+    background-color: rgb(255, 140, 0);
+    color: black;
 }
 
 button[type="submit"]{
@@ -47,24 +63,28 @@ button[type="submit"]{
     cursor: pointer;
 }
 
-#xInput, input[type="checkbox"] {
-    margin: 10px 5px;        
-    padding: 5px;            
+#xInput, input[type="checkbox"]{
+    margin: 10px 5px;
+    padding: 5px;
 }
 
-
-table {
+table{
     width: 100%;
     border-collapse: collapse;
+    margin-top: 20px;
 }
 
-th, td {
+th, td{
     border: 1px solid #bdc3c7;
     padding: 10px;
     text-align: center;
 }
 
-th {
+th{
     background-color: #34495e;
     color: white;
+}
+
+td{
+    background-color: white;
 }
